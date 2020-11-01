@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using NLIIS_Language_recognizer.Models;
+using NLIIS_Language_recognizer.Service;
 
 namespace NLIIS_Language_recognizer
 {
@@ -20,6 +23,9 @@ namespace NLIIS_Language_recognizer
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ILanguageRecognizer FrequencyWordRecognizer { get; set; }
+        private ILanguageRecognizer ShortWordRecognizer { get; set; }
+
         public IDictionary<string, int> RussianWordFrequency = new Dictionary<string, int>()
         {
             { "и", 7416716 },
@@ -230,22 +236,38 @@ namespace NLIIS_Language_recognizer
         
         public MainWindow()
         {
+            FrequencyWordRecognizer = new FrequencyWordLanguageRecognizer();
+            ShortWordRecognizer = new ShortWordLanguageRecognizer();
+            
             InitializeComponent();
         }
-
-        public void Recognize()
+        
+        public void Upload(string path, string language, string method)
         {
+            var termsFromFile = DocumentService.FromPDF(path);
+            IDictionary<string, double> termsProbability = null;
             
-        }
+            if (method == FrequencyWordLanguageRecognizer.MethodName) {
+                termsProbability = FrequencyWordRecognizer.GetWords(termsFromFile);
+            } else if (method == ShortWordLanguageRecognizer.MethodName){
+                termsProbability = ShortWordRecognizer.GetWords(termsFromFile);
+            }
 
-        public void GetFrequencyList(string text, string symbols)
-        {
-            var wordRegex = GetWordRegex(symbols);
-        }
+            foreach (var (word, probability) in termsProbability)
+            {
+                var newWord = new LanguageWord
+                {
+                    Language = language,
+                    Method = method,
+                    Probability = probability,
+                    Word = word
+                };
 
-        private string GetWordRegex(string symbols)
-        {
-            return "[" + symbols + "]+";
+                if (!LanguageWord.Words.Contains(newWord, new LanguageWord.Comparer()))
+                {
+                    LanguageWord.Words.Add(newWord);
+                }
+            }
         }
     }
 }
