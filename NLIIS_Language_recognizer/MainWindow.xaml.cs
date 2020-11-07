@@ -12,6 +12,7 @@ namespace NLIIS_Language_recognizer
     {
         private ILanguageRecognizer FrequencyWordRecognizer { get; set; }
         private ILanguageRecognizer ShortWordRecognizer { get; set; }
+        private ILanguageRecognizer OwnRecognizer { get; set; }
         
         private OpenFileDialog FileDialog { get; set; }
 
@@ -227,6 +228,7 @@ namespace NLIIS_Language_recognizer
         {
             FrequencyWordRecognizer = new FrequencyWordLanguageRecognizer();
             ShortWordRecognizer = new ShortWordLanguageRecognizer();
+            OwnRecognizer = new OwnLanguageRecognizer();
             FileDialog = new OpenFileDialog { Multiselect = true };
 
             InitializeComponent();
@@ -281,7 +283,7 @@ namespace NLIIS_Language_recognizer
         private void Authors_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(
-                "Group 721701:\nSemenikhin Nirita,\nStryzhych Angelika",
+                "Group 721701:\nSemenikhin Nikita,\nStryzhych Angelika",
                 "Authors");
         }
         
@@ -317,7 +319,7 @@ namespace NLIIS_Language_recognizer
 
             LangsLabel.Content = "Frequency M: " + FrequencyWordRecognizer.Recognize(text) +
                                  ", Short M: " + ShortWordRecognizer.Recognize(text) +
-                                 ", Own M: ";
+                                 ", Own M: " + OwnRecognizer.Recognize(text);
         }
     }
 }
