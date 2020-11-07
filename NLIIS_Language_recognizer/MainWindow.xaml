@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NLIIS_Language_recognizer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="715">
+        Title="MainWindow" Height="150" Width="715">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
@@ -17,8 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />
             <RowDefinition Height="50" />
-            <RowDefinition Height="30" />
-            <RowDefinition Height="370" />
+            <RowDefinition Height="50" />
         </Grid.RowDefinitions>
         
         <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Height="20">
@@ -54,10 +53,22 @@
             <ComboBoxItem Content="ShortWord"/>
         </ComboBox>
         <Button 
+            Name="ButtonUpload"
+            IsEnabled="False"
             Grid.Row="1" Grid.Column="4"
             Content="Upload" HorizontalContentAlignment="Center"
             Height="20" Width="90"
             Click="ButtonUpload_OnClick"
         />
+        <Button
+            Name="ButtonRecognize"
+            IsEnabled="False"
+            Grid.Row="2" Grid.Column="4"
+            Content="Recognize" HorizontalContentAlignment="Center"
+            Height="20" Width="90"
+            Click="ButtonRecognize_OnClick"
+        />
+        
+        <Label Name="LangsLabel" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">Recognized languages...</Label>
     </Grid>
 </Window>

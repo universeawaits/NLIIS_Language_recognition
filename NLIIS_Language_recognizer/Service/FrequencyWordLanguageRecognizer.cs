@@ -29,7 +29,8 @@ namespace NLIIS_Language_recognizer.Service
                 }
             }
 
-            return wordsOccurrences.First(pair => pair.Value == wordsOccurrences.Values.Max()).Key ?? "Undefined";
+            return wordsOccurrences.FirstOrDefault(pair => pair.Value == wordsOccurrences.Values.Max() && pair.Value != 0).Key
+                   ?? "Undefined";
         }
 
         public IDictionary<string, double> GetWords(string text)

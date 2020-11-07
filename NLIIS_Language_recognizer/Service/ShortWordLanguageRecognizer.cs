@@ -27,7 +27,8 @@ namespace NLIIS_Language_recognizer.Service
                 }
             }
 
-            return termsOccurrences.First(pair => pair.Value == termsOccurrences.Values.Max()).Key ?? "Undefined";
+            return termsOccurrences.FirstOrDefault(pair => pair.Value == termsOccurrences.Values.Max() && pair.Value != 0).Key
+                   ?? "Undefined";
         }
 
         public IDictionary<string, double> GetWords(string text)
@@ -50,7 +51,7 @@ namespace NLIIS_Language_recognizer.Service
                                         word.Method.Equals(method) &&
                                         word.Language.Equals(language));
 
-            return foundWord?.Probability ?? 0.01;
+            return foundWord?.Probability ?? 0.0000001;
         }
     }
 }

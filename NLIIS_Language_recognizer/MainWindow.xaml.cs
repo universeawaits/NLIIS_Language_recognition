@@ -1,18 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Win32;
 using NLIIS_Language_recognizer.Models;
 using NLIIS_Language_recognizer.Service;
@@ -23,6 +12,8 @@ namespace NLIIS_Language_recognizer
     {
         private ILanguageRecognizer FrequencyWordRecognizer { get; set; }
         private ILanguageRecognizer ShortWordRecognizer { get; set; }
+        
+        private OpenFileDialog FileDialog { get; set; }
 
         public IDictionary<string, int> RussianWordFrequency = new Dictionary<string, int>()
         {
@@ -236,39 +227,45 @@ namespace NLIIS_Language_recognizer
         {
             FrequencyWordRecognizer = new FrequencyWordLanguageRecognizer();
             ShortWordRecognizer = new ShortWordLanguageRecognizer();
-            
+            FileDialog = new OpenFileDialog { Multiselect = true };
+
             InitializeComponent();
         }
         
-        public void Upload(string path, string language, string method)
+        public void Upload(IEnumerable<string> paths, string language, string method)
         {
-            var termsFromFile = DocumentService.FromPDF(path);
-            IDictionary<string, double> termsProbability = null;
+            foreach (var path in paths)
+            {
+                var termsFromFile = DocumentService.FromPDF(path);
+                IDictionary<string, double> termsProbability = null;
             
-            if (method == FrequencyWordLanguageRecognizer.MethodName)
-            {
-                termsProbability = FrequencyWordRecognizer.GetWords(termsFromFile);
-            }
-            else if (method == ShortWordLanguageRecognizer.MethodName)
-            {
-                termsProbability = ShortWordRecognizer.GetWords(termsFromFile);
-            }
-
-            foreach (var (word, probability) in termsProbability)
-            {
-                var newWord = new LanguageWord
+                if (method == FrequencyWordLanguageRecognizer.MethodName)
                 {
-                    Language = language,
-                    Method = method,
-                    Probability = probability,
-                    Word = word
-                };
-
-                if (!LanguageWord.Words.Contains(newWord, new LanguageWord.Comparer()))
+                    termsProbability = FrequencyWordRecognizer.GetWords(termsFromFile);
+                }
+                else if (method == ShortWordLanguageRecognizer.MethodName)
                 {
-                    LanguageWord.Words.Add(newWord);
+                    termsProbability = ShortWordRecognizer.GetWords(termsFromFile);
+                }
+
+                foreach (var (word, probability) in termsProbability)
+                {
+                    var newWord = new LanguageWord
+                    {
+                        Language = language,
+                        Method = method,
+                        Probability = probability,
+                        Word = word
+                    };
+
+                    if (!LanguageWord.Words.Contains(newWord, new LanguageWord.Comparer()))
+                    {
+                        LanguageWord.Words.Add(newWord);
+                    }
                 }
             }
+
+            ButtonRecognize.IsEnabled = true;
         }
         
         private void Help_Click(object sender, RoutedEventArgs e)
@@ -290,17 +287,37 @@ namespace NLIIS_Language_recognizer
         
         private void ButtonFile_OnClick(object sender, RoutedEventArgs e)
         {
-            var fileDialog = new OpenFileDialog();
-            
-            if (fileDialog.ShowDialog() == true)
+            if (FileDialog.ShowDialog() == true)
             {
-                UploadPath.Text = fileDialog.FileName;
+                UploadPath.Text = string.Empty;
+                
+                foreach (var filename in FileDialog.FileNames)
+                {
+                    UploadPath.Text += filename + "*";
+                }
+
+                if (UploadPath.Text.Length > 0)
+                {
+                    UploadPath.Text = UploadPath.Text.Substring(0, UploadPath.Text.Length - 1);
+                    ButtonUpload.IsEnabled = true;
+                }
             }
         }
         
-        public void ButtonUpload_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonUpload_OnClick(object sender, RoutedEventArgs e)
         {
-            Upload(UploadPath.Text, UploadLanguage.Text, UploadMethod.Text);
+            Upload(UploadPath.Text.Split("*"), UploadLanguage.Text, UploadMethod.Text);
+        }
+        
+        private void ButtonRecognize_OnClick(object sender, RoutedEventArgs e)
+        {
+            var index = UploadPath.Text.IndexOf("*", StringComparison.Ordinal);
+            var path = UploadPath.Text.Substring(0, index <= 0 ? UploadPath.Text.Length : index);
+            var text = DocumentService.FromPDF(path);
+
+            LangsLabel.Content = "Frequency M: " + FrequencyWordRecognizer.Recognize(text) +
+                                 ", Short M: " + ShortWordRecognizer.Recognize(text) +
+                                 ", Own M: ";
         }
     }
 }
