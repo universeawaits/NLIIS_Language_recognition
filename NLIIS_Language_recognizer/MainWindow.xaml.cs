@@ -13,14 +13,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 using NLIIS_Language_recognizer.Models;
 using NLIIS_Language_recognizer.Service;
 
 namespace NLIIS_Language_recognizer
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private ILanguageRecognizer FrequencyWordRecognizer { get; set; }
@@ -247,9 +245,12 @@ namespace NLIIS_Language_recognizer
             var termsFromFile = DocumentService.FromPDF(path);
             IDictionary<string, double> termsProbability = null;
             
-            if (method == FrequencyWordLanguageRecognizer.MethodName) {
+            if (method == FrequencyWordLanguageRecognizer.MethodName)
+            {
                 termsProbability = FrequencyWordRecognizer.GetWords(termsFromFile);
-            } else if (method == ShortWordLanguageRecognizer.MethodName){
+            }
+            else if (method == ShortWordLanguageRecognizer.MethodName)
+            {
                 termsProbability = ShortWordRecognizer.GetWords(termsFromFile);
             }
 
@@ -268,6 +269,38 @@ namespace NLIIS_Language_recognizer
                     LanguageWord.Words.Add(newWord);
                 }
             }
+        }
+        
+        private void Help_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(
+                "Type words in search box, then press Search\n" +
+                "button to find proper documents.\n" +
+                "Boolean operators can be used: &, |, and brackets. Example query:\n" +
+                @"we | (are & ""the champions"")",
+                "Help");
+        }
+        
+        private void Authors_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(
+                "Group 721701:\nSemenikhin Nirita,\nStryzhych Angelika",
+                "Authors");
+        }
+        
+        private void ButtonFile_OnClick(object sender, RoutedEventArgs e)
+        {
+            var fileDialog = new OpenFileDialog();
+            
+            if (fileDialog.ShowDialog() == true)
+            {
+                UploadPath.Text = fileDialog.FileName;
+            }
+        }
+        
+        public void ButtonUpload_OnClick(object sender, RoutedEventArgs e)
+        {
+            Upload(UploadPath.Text, UploadLanguage.Text, UploadMethod.Text);
         }
     }
 }

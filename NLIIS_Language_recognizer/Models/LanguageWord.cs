@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace NLIIS_Language_recognizer.Models
 {
@@ -17,11 +18,19 @@ namespace NLIIS_Language_recognizer.Models
         
         public class Comparer : IEqualityComparer<LanguageWord> {
             public bool Equals(LanguageWord x, LanguageWord y) {
-                return x.Word.Equals(y.Word) && x.Language.Equals(y.Language);
+                if (x == null || y == null)
+                {
+                    return false;
+                }
+                
+                return x.Word.Equals(y.Word) && x.Language.Equals(y.Language) && x.Method.Equals(y.Method);
             }
 
             public int GetHashCode(LanguageWord obj) {
-                return Int32.Parse(obj).ToString().GetHashCode();
+                return Int32.Parse(
+                    (obj.Probability * obj.Language.Length * obj.Method.Length / obj.Word.Length).ToString(CultureInfo.InvariantCulture))
+                    .ToString()
+                    .GetHashCode();
             }
         }
     }

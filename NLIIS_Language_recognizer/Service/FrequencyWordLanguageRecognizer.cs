@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NLIIS_Language_recognizer.Models;
 
@@ -12,19 +11,20 @@ namespace NLIIS_Language_recognizer.Service
         public string Recognize(string text)
         {
             var wordsOccurrences = Language.GetAllLanguages()
-                .ToDictionary(language => language, language => 0);
+                .ToDictionary(language => language, language => 0d);
 
             var atoms = DocumentService.GetAtoms(text);
 
             foreach (var atom in atoms)
             {
-                var founds = wordRepository.findAllByWordAndMethod(atom, MethodName);
+                var founds = LanguageWord.Words
+                    .Where(word => word.Word.Equals(atom) && word.Method.Equals(MethodName));
                 
                 foreach (var found in founds)
                 {
                     var currentProbability = wordsOccurrences[found.Language];
                     wordsOccurrences.Remove(found.Language);
-                    currentProbability += found.Frequency;
+                    currentProbability += found.Probability;
                     wordsOccurrences.Add(found.Language, currentProbability);
                 }
             }
@@ -39,7 +39,7 @@ namespace NLIIS_Language_recognizer.Service
 
             return wordsOccurrences.ToDictionary(
                 pair => pair.Key,
-                pair => (double) (pair.Value / allWords.Count()));
+                pair => (double) pair.Value / (double) allWords.Count());
         }
     }
 }

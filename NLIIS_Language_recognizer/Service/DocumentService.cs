@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using BitMiracle.Docotic.Pdf;
 
@@ -23,29 +25,33 @@ namespace NLIIS_Language_recognizer.Service
 
         private static string GetCleanText(string text)
         {
-            return 
-                Regex.Replace(text, "[–,.;:!?]", string.Empty)
+            return Regex.Replace(text, "[:?*()^%$#@.,~\\-_\\[\\]\\d\\t]", string.Empty)
                     .Replace("\n", " ")
+                    .Replace("\r", " ")
                     .ToLower();
-            //.replaceAll("  ( )*", " ").toLowerCase();
         }
 
         public static IEnumerable<string> GetSplitWords(string text){
-            return GetCleanText(text).Split(" ");
+            return GetCleanText(text)
+                .Split(" ")
+                .Where(word => !word.Equals(string.Empty))
+                .ToList();
         }
 
-        public static IDictionary<string, int> GetWordsOccurrences(IEnumerable<string> words) {
-
+        public static IDictionary<string, int> GetWordsOccurrences(IEnumerable<string> words)
+        {
             var initialForms = new Dictionary<string, int>();
 
-            foreach (var word in words) {
-
+            foreach (var word in words)
+            {
                 if (initialForms.ContainsKey(word))
                 {
                     initialForms.TryGetValue(word, out var prevValue);
                     initialForms.Remove(word);
                     initialForms.Add(word, prevValue + 1);
-                } else {
+                }
+                else
+                {
                     initialForms.Add(word, 1);
                 }
             }

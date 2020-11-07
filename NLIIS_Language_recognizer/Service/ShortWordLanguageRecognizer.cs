@@ -12,7 +12,7 @@ namespace NLIIS_Language_recognizer.Service
         public string Recognize(string text)
         {
             var termsOccurrences = Language.GetAllLanguages()
-                .ToDictionary(language => language, language => Math.Pow(100, 150D));
+                .ToDictionary(language => language, language => Math.Pow(100, 150d));
 
             var atoms = DocumentService.GetAtoms(text);
 
@@ -45,9 +45,12 @@ namespace NLIIS_Language_recognizer.Service
         }
 
         private double GetProbability(string atom, string method, string language){
-            LanguageWord word = wordRepository.findByWordAndMethodAndLanguage(atom, method, language);
+            var foundWord = LanguageWord.Words
+                .FirstOrDefault(word => word.Word.Equals(atom) &&
+                                        word.Method.Equals(method) &&
+                                        word.Language.Equals(language));
 
-            return word?.Probability ?? 0.01;
+            return foundWord?.Probability ?? 0.01;
         }
     }
 }
