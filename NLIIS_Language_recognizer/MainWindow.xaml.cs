@@ -273,11 +273,8 @@ namespace NLIIS_Language_recognizer
         private void Help_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(
-                "Type words in search box, then press Search\n" +
-                "button to find proper documents.\n" +
-                "Boolean operators can be used: &, |, and brackets. Example query:\n" +
-                @"we | (are & ""the champions"")",
-                "Help");
+                "Load documents to fill the base probabilities for each language and method" +
+                "\nThen you can choose a document to recognize language in");
         }
         
         private void Authors_Click(object sender, RoutedEventArgs e)

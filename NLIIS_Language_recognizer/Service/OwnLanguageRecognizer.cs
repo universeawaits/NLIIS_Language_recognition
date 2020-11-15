@@ -34,16 +34,7 @@ namespace NLIIS_Language_recognizer.Service
 
         public IDictionary<string, double> GetWords(string text)
         {
-            var allWords = DocumentService.GetSplitWords(text);
-            var shortWords = DocumentService.GetWordsOccurrences(allWords)
-                .Where(pair => pair.Key.Length < 5 && pair.Value > 3)
-                .ToDictionary(pair => pair.Key, pair => pair.Value);
-
-            var sumFrequencies = shortWords.Sum(pair => pair.Value);
-
-            return shortWords.ToDictionary(
-                pair => pair.Key,
-                pair => (double)pair.Value / (double)sumFrequencies);
+            throw new NotImplementedException();
         }
 
         private int IsLanguageWord(string atom, string language)
