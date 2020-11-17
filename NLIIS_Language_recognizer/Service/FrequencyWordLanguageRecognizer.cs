@@ -6,7 +6,7 @@ namespace NLIIS_Language_recognizer.Service
 {
     public class FrequencyWordLanguageRecognizer : ILanguageRecognizer
     {
-        public static string MethodName => "FrequencyWord";
+        public string MethodName => "FrequencyWord";
 
         public string Recognize(string text)
         {

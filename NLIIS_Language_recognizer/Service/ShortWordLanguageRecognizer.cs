@@ -7,7 +7,7 @@ namespace NLIIS_Language_recognizer.Service
 {
     public class ShortWordLanguageRecognizer : ILanguageRecognizer
     {
-        public static string MethodName => "ShortWord";
+        public string MethodName => "ShortWord";
 
         public string Recognize(string text)
         {

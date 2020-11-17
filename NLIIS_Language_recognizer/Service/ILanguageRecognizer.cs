@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using NLIIS_Language_recognizer.Models;
+﻿using System.Collections.Generic;
 
 namespace NLIIS_Language_recognizer.Service
 {
     public interface ILanguageRecognizer
     {
-        static string MethodName { get; }
+        string MethodName { get; }
         string Recognize(string text);
         IDictionary<string, double> GetWords(string text);
     }

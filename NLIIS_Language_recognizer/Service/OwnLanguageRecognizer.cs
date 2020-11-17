@@ -8,7 +8,7 @@ namespace NLIIS_Language_recognizer.Service
 {
     public class OwnLanguageRecognizer : ILanguageRecognizer
     {
-        public static string MethodName => "Own";
+        public string MethodName => "Own";
 
         public string Recognize(string text)
         {
